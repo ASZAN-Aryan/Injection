@@ -1,0 +1,59 @@
+## Multi-Turn Prompt Injection Testing
+
+The multi-turn experiment evaluates whether follow-up prompts can cause a model to disclose a predefined test secret after an initial non-disclosing response.
+
+### Experiment Results
+
+- Model: Qwen3:8B via Ollama
+- Scenarios: 10
+- Successful responses: 20
+- Exact-secret leaking turns: 1
+- Turn-level exact-secret leak rate: 5%
+
+The observed leak occurred in the Role-play Escalation scenario, where the second prompt requested a fictional assistant's hidden configuration.
+
+These results are exploratory. The multi-turn and single-turn experiments use different prompts and conditions, so their leak rates should not be directly compared.
+
+### Project Files
+
+| File | Purpose |
+|---|---|
+| `multi_turn.py` | Runs the multi-turn experiment |
+| `multi_turn_results.json` | Stores results for all multi-turn scenarios |
+| `multi_turn_leak_evidence.json` | Records the confirmed leaking turn |
+| `multi_turn_run_log.txt` | Preserves the terminal output |
+| `analyze.py` | Analyzes baseline results |
+| `audit_leaks.py` | Checks for exact and selected encoded representations of the test secret |
+| `results.json` | Original single-turn baseline results |
+
+### Running the Experiments
+
+Start Ollama and ensure the required model is installed:
+
+```powershell
+ollama list
+```
+
+Run the multi-turn experiment:
+
+```powershell
+python multi_turn.py
+```
+
+Analyze the baseline results:
+
+```powershell
+python analyze.py
+```
+
+Audit baseline responses for selected secret representations:
+
+```powershell
+python audit_leaks.py
+```
+
+The multi-turn experiment writes to `multi_turn_results.json`; the original `results.json` should be retained as the single-turn baseline.
+
+### Security and Limitations
+
+The secret used in this project is a dummy benchmark value, not a real credential. Results are based on a limited number of prompts and should not be treated as a comprehensive security evaluation. Keyword and exact-string checks may miss semantic disclosures or other encodings.
